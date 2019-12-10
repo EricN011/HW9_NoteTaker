@@ -2,6 +2,8 @@ const express = require("express");
 const path = require("path");
 const PORT = process.env.PORT || 3000;
 const app = express();
+const fs = require("fs");
+let data = [];
 
 // use express to handle data
 app.use(express.static("css"));
@@ -11,19 +13,36 @@ app.use(express.json());
 
 // Data
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "index.html"));
+  res.sendFile(path.join(__dirname, "/public/index.html"));
 });
 
 app.get("/notes", (req, res) => {
-  res.sendFile(path.join(__dirname, "notes.html"));
+  res.sendFile(path.join(__dirname, "/public/notes.html"));
 });
-
+// reading & parsing data
 app.get("/api/notes", (req, res) => {
   fs.readFile("db.json", (err, data) => {
     if (err) throw err;
-    database = JSON.parse(data);
-    return res.json(database[0].notes);
+    data = JSON.parse(data);
+    return res.json(data[0].notes);
   });
+});
+
+// delete data
+app.delete("/api/notes/:id", (req, res) => {
+  data[0].notes.splice(
+    data[0].notes.findIndex(function(i) {
+      return i.id === req.params.id;
+    }),
+    1
+  );
+  fs.writeFile("db.json", JSON.stringify(data), "utf8", err => {
+    if (err) {
+      console.log(err);
+    }
+  });
+
+  res.json(true);
 });
 
 // Listener
