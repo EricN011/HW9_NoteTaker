@@ -10,6 +10,8 @@ app.use(express.static("css"));
 app.use(express.static("js"));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(express.static("public"));
+app.use(express.static("assets"));
 
 // Data
 app.get("/", (req, res) => {
@@ -21,11 +23,23 @@ app.get("/notes", (req, res) => {
 });
 // reading & parsing data
 app.get("/api/notes", (req, res) => {
-  fs.readFile("db.json", (err, data) => {
+  fs.readFile("/db/db.json", (err, data) => {
     if (err) throw err;
     data = JSON.parse(data);
     return res.json(data[0].notes);
   });
+});
+// posting data
+app.post("/api/notes", (req, res) => {
+  req.body.id = data[0].lastID++;
+  data[0].notes.push(req.body);
+  fs.writeFile("/db/db.json", JSON.stringify(data), "utf8", err => {
+    if (err) {
+      console.log(err);
+    }
+  });
+
+  res.json(true);
 });
 
 // delete data
@@ -45,7 +59,28 @@ app.delete("/api/notes/:id", (req, res) => {
   res.json(true);
 });
 
+let init = () => {
+  if (fs.existsSync("./db/db.json")) {
+    fs.readFile("./db/db.json", (err, data) => {
+      if (err) throw err;
+      database = JSON.parse(data);
+    });
+  } else {
+    fs.readFile("./db/template.json", (err, data) => {
+      if (err) throw err;
+      database = JSON.parse(data);
+      fs.writeFile("./db/db.json", JSON.stringify(database), "utf8", err => {
+        if (err) {
+          console.log(err);
+        }
+      });
+    });
+  }
+};
+
 // Listener
 app.listen(PORT, function() {
   console.log("App listening on PORT " + PORT);
 });
+
+init();

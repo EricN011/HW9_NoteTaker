@@ -17,6 +17,7 @@ const getNotes = function() {
 
 // A function for saving a note to the db
 const saveNote = function(note) {
+  console.log(note);
   return $.ajax({
     url: "/notes",
     data: note,
