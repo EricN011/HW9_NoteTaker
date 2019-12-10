@@ -22,7 +22,7 @@ app.get("/notes", (req, res) => {
   res.sendFile(path.join(__dirname, "/public/notes.html"));
 });
 // reading & parsing data
-app.get("/api/notes", (req, res) => {
+app.get("/notes", (req, res) => {
   fs.readFile("/db/db.json", (err, data) => {
     if (err) throw err;
     data = JSON.parse(data);
@@ -30,7 +30,7 @@ app.get("/api/notes", (req, res) => {
   });
 });
 // posting data
-app.post("/api/notes", (req, res) => {
+app.post("/notes", (req, res) => {
   req.body.id = data[0].lastID++;
   data[0].notes.push(req.body);
   fs.writeFile("/db/db.json", JSON.stringify(data), "utf8", err => {
@@ -43,7 +43,7 @@ app.post("/api/notes", (req, res) => {
 });
 
 // delete data
-app.delete("/api/notes/:id", (req, res) => {
+app.delete("/notes/:id", (req, res) => {
   data[0].notes.splice(
     data[0].notes.findIndex(function(i) {
       return i.id === req.params.id;
